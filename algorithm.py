@@ -4,7 +4,8 @@ from multiprocessing import Pool
 ########## we use 50 cores to run the algorithm ##########
 nbinl=6 # number of \ell bin
 number_bin=5 # number of redshift bin
-######################## algorithm 1-FP #######################
+#gg1_zp_mat is the powerspectrum between photo-z bins with shape (nbinl,number_bin,number_bin) and input to the algorithm
+######################## Algorithm 1-FP #######################
 def update_p(p0,CR_l,Ql,CP_l):
     for i in range(nbinl):
         CR_l[i]=np.dot(np.dot(p0.T.I,CP_l[i]),p0.I)
@@ -28,7 +29,7 @@ def a1_iter(seed):
     p0_all=np.zeros((n_times,number_bin,number_bin))
 
     CP_l=np.zeros((nbinl,number_bin,number_bin))
-    CP_l[:]=gg1_zp_mat[:] # power spectrum (nbinl,number_bin,number_bin)
+    CP_l[:]=gg1_zp_mat[:] # input power spectrum
     while(times<n_times):# judge_P>0):
         niter=0
         CR_l=np.zeros_like(CP_l)
@@ -77,10 +78,10 @@ for i in range(n_a1):
 J_all=np.array(rel1).reshape(-1,)
 p0_all=np.array(rel2).reshape(-1,number_bin,number_bin)
 
-J_all_sort=np.copy(J_all[J_all.argsort()])
-p0_all_sort=np.copy(p0_all[J_all.argsort()])
+J_all_sort=np.copy(J_all[J_all.argsort()]) #output J (Algorithm 1)
+p0_all_sort=np.copy(p0_all[J_all.argsort()]) # output the scattering matrix (Algorithm 1) and input to the Algorithm 2
 
-######################## algorithm 2-NMF #######################
+######################## Algorithm 2-NMF #######################
 def update_CR_l(W,Vl,nbinl,number_bin):
     U=np.zeros((number_bin*number_bin,number_bin))
     Vec_Vl=np.zeros((nbinl,number_bin*number_bin,1))
@@ -126,7 +127,7 @@ def a2_iter(nl):
         H=np.zeros((nbinl,number_bin,number_bin))
         Vl=np.zeros((nbinl,number_bin,number_bin))
 
-        Vl[:]=gg1_zp_mat[:] # power spectrum (nbinl,number_bin,number_bin)
+        Vl[:]=gg1_zp_mat[:] # input power spectrum
 
         J_all=[]
         p0_all=[]
@@ -176,6 +177,6 @@ for i in range(npool):
     rel1.append(rel[i][0])
     rel2.append(rel[i][1])
     rel3.append(rel[i][2])
-J_all_min=np.array(rel1).reshape(-1,)
-p0_all_min=np.array(rel2).reshape(-1,number_bin,number_bin)
-CR_all_min=np.array(rel3).reshape(-1,nbinl,number_bin,number_bin)
+J_all_min=np.array(rel1).reshape(-1,) #output J (Algorithm 2)
+p0_all_min=np.array(rel2).reshape(-1,number_bin,number_bin)# output the scattering matrix (Algorithm 2)
+CR_all_min=np.array(rel3).reshape(-1,nbinl,number_bin,number_bin) # output power spectrum between true-z bins (Algorithm 2)
