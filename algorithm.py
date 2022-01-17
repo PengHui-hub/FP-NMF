@@ -4,7 +4,7 @@ from multiprocessing import Pool
 ########## we use 50 cores to run the algorithm ##########
 nbinl=6 # number of \ell bin
 number_bin=5 # number of redshift bin
-#gg1_zp_mat is the powerspectrum between photo-z bins with shape (nbinl,number_bin,number_bin) and input to the algorithm
+gg1_zp_mat=np.load('input_powerspectrum.npy') #gg1_zp_mat is the powerspectrum between photo-z bins with the shape (nbinl,number_bin,number_bin)
 ######################## Algorithm 1-FP #######################
 def update_p(p0,CR_l,Ql,CP_l):
     for i in range(nbinl):
@@ -80,6 +80,9 @@ p0_all=np.array(rel2).reshape(-1,number_bin,number_bin)
 
 J_all_sort=np.copy(J_all[J_all.argsort()]) #output J (Algorithm 1)
 p0_all_sort=np.copy(p0_all[J_all.argsort()]) # output the scattering matrix (Algorithm 1) and input to the Algorithm 2
+
+np.save('J_all_a1.npy',J_all_sort)
+np.save('p0_all_a1.npy',p0_all_sort)
 
 ######################## Algorithm 2-NMF #######################
 def update_CR_l(W,Vl,nbinl,number_bin):
@@ -180,3 +183,7 @@ for i in range(npool):
 J_all_min=np.array(rel1).reshape(-1,) #output J (Algorithm 2)
 p0_all_min=np.array(rel2).reshape(-1,number_bin,number_bin)# output the scattering matrix (Algorithm 2)
 CR_all_min=np.array(rel3).reshape(-1,nbinl,number_bin,number_bin) # output power spectrum between true-z bins (Algorithm 2)
+
+np.save('J_all_a2.npy',J_all_min)
+np.save('p0_all_a2.npy',p0_all_min)
+np.save('CR_all_a2.npy',CR_all_min)
