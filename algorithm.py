@@ -57,6 +57,9 @@ def a1_iter(seed):
                 judge_J=(JJ[niter-1]+JJ[niter-2]+JJ[niter-3])/3*1.5
                 if JJ[niter]>=judge_J:
                     break
+            if niter>=1000:
+                if np.argmin(JJ)<0.80*niter:
+                    break
             niter+=1
         J_all[times]=JJ[np.argmin(JJ)]
         p0_all[times]=pp0[np.argmin(JJ)]
