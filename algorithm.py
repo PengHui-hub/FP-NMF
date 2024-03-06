@@ -2,9 +2,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 from multiprocessing import Pool
 ########## we use 50 cores to run the algorithm ##########
-nbinl=6 # number of \ell bin
-number_bin=5 # number of redshift bin
-gg1_zp_mat=np.load('input_powerspectrum.npy') #gg1_zp_mat is the powerspectrum between photo-z bins with the shape (nbinl,number_bin,number_bin)
+#gg1_zp_mat is the powerspectrum between photo-z bins with the shape (nbinl,number_bin,number_bin)
+gg1_zp_mat = np.load('input_powerspectrum.npy')
+
+#nbinl is the number of \ell bin, number_bin is the number of redshift bin
+nbinl,number_bin,number_bin = gg1_zp_mat.shape
 ######################## Algorithm 1-FP #######################
 def update_p(p0,CR_l,Ql,CP_l):
     for i in range(nbinl):
@@ -81,8 +83,10 @@ for i in range(n_a1):
 J_all=np.array(rel1).reshape(-1,)
 p0_all=np.array(rel2).reshape(-1,number_bin,number_bin)
 
-J_all_sort=np.copy(J_all[J_all.argsort()]) #output J (Algorithm 1)
-p0_all_sort=np.copy(p0_all[J_all.argsort()]) # output the scattering matrix (Algorithm 1) and input to the Algorithm 2
+#output J (Algorithm 1)
+J_all_sort=np.copy(J_all[J_all.argsort()])
+# output the scattering matrix (Algorithm 1) and input to the Algorithm 2
+p0_all_sort=np.copy(p0_all[J_all.argsort()])
 
 np.save('J_all_a1.npy',J_all_sort)
 np.save('p0_all_a1.npy',p0_all_sort)
@@ -168,10 +172,14 @@ def a2_iter(nl):
         CR_all_test1.append(CR_all[np.argmin(J_all)])
         min_J_all.append(min(J_all))
     return min_J_all,P_all_test1,CR_all_test1
-sum_times=1000 # number of runs
-npool=50 # 50 threads, each use 1 core
-n_a2=int(sum_times/npool) # number of runs per thread
-n_iter=int(1e4) # number of iterations per run
+# number of runs
+sum_times=1000
+# 50 threads, each use 1 core
+npool=50
+# number of runs per thread
+n_a2=int(sum_times/npool)
+# number of iterations per run
+n_iter=int(1e4)
 pool = Pool(npool)
 rel = pool.map(a2_iter, range(npool))
 pool.close()
@@ -183,9 +191,12 @@ for i in range(npool):
     rel1.append(rel[i][0])
     rel2.append(rel[i][1])
     rel3.append(rel[i][2])
-J_all_min=np.array(rel1).reshape(-1,) #output J (Algorithm 2)
-p0_all_min=np.array(rel2).reshape(-1,number_bin,number_bin)# output the scattering matrix (Algorithm 2)
-CR_all_min=np.array(rel3).reshape(-1,nbinl,number_bin,number_bin) # output power spectrum between true-z bins (Algorithm 2)
+#output J (Algorithm 2)
+J_all_min=np.array(rel1).reshape(-1,)
+# output the scattering matrix (Algorithm 2)
+p0_all_min=np.array(rel2).reshape(-1,number_bin,number_bin)
+# output power spectrum between true-z bins (Algorithm 2)
+CR_all_min=np.array(rel3).reshape(-1,nbinl,number_bin,number_bin)
 
 np.save('J_all_a2.npy',J_all_min)
 np.save('p0_all_a2.npy',p0_all_min)
