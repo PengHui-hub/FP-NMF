@@ -173,12 +173,12 @@ if __name__ == '__main__':
     ################### Below are the input and parameters ####################
     #gg_ps_all is the input power spectra between photo-z bins with shape (n_ps, nbinl, number_bin, number_bin),
     #n_ps is the number of perturbed power spectra, nbinl is the number of \ell bin, number_bin is the number of redshift bin.
-    gg_ps_all = np.load('/home/penghui/cross_project/cross_test/Matrix_cross_mission_test.npy')
+    gg_ps_all = np.load('input_powerspectra.npy')
 
     n_ps, nbinl, number_bin, number_bin = gg_ps_all.shape
 
     #V is the input weight with shape (nbinl, number_bin, number_bin) and a common choice is the inverse variance matrix of each matrix element 1/(sigma^2).
-    sigma_ps = np.load('./sigma_ps_mission_test.npy') #already times \ell
+    sigma_ps = np.load('sigma.npy')
     V = 1/(sigma_ps*sigma_ps)
 
     # Number of parallel threads, default 40.
