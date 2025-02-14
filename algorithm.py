@@ -75,7 +75,12 @@ def update_CR_l(W, Vl, nbinl, number_bin):
         Vec_Vl[i] = Vl[i, :, :].reshape((-1, 1), order='F')
     for i in range(nbinl):
         for j in range(number_bin):
-            CL[i,j,j] = abs(np.dot(np.mat(U).I, Vec_Vl[i])[j, 0])
+            try:
+                CL[i,j,j] = abs(np.dot(np.mat(U).I, Vec_Vl[i])[j, 0])
+                # Process successful results
+            except np.linalg.LinAlgError as e:
+                print(f"Error encountered: {e}. Skipping this data.")
+                continue  # Skip current data
     return CL
 
 def A_plus(A):
